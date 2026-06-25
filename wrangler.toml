@@ -1,17 +1,16 @@
-name = "halo-mcp"
+name = "halo"
 main = "src/index.ts"
 compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
 
-[durable_objects]
-bindings = [
-  { name = "MCP_OBJECT", class_name = "HaloMCP" }
-]
-
-[[migrations]]
-tag = "v1"
-new_classes = ["HaloMCP"]
-
 [[kv_namespaces]]
 binding = "HALO_KV"
 id = "fc942665a4ee4de58413780118909235"
+
+[[durable_objects.bindings]]
+name = "MCP_OBJECT"
+class_name = "HaloMCP"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["HaloMCP"]
