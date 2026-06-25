@@ -1,0 +1,17 @@
+name = "halo-mcp"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[durable_objects]
+bindings = [
+  { name = "MCP_OBJECT", class_name = "HaloMCP" }
+]
+
+[[migrations]]
+tag = "v1"
+new_classes = ["HaloMCP"]
+
+[[kv_namespaces]]
+binding = "MY_KV"
+id = "YOUR_KV_NAMESPACE_ID"
