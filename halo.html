@@ -521,6 +521,9 @@
 
         // ── 4. 배터리 소모 시뮬레이터 (1초 인터벌) ──────────────
         // 밝기 100%일 때 분당 2% 소모 (초당 0.0333%)
+        let lowBatteryAlerted = false;
+        let longUptimeAlerted = false;
+
         setInterval(() => {
             if (state.power && state.battery > 0 && !state.charging) {
                 const loss = (2 / 60) * (state.brightness / 100);
@@ -531,6 +534,24 @@
                     (state.uptimeMinutes + 1/60).toFixed(4)
                 );
 
+                // 배터리 20% 이하 → "배고파요"
+                if (state.battery <= 20 && !lowBatteryAlerted) {
+                    lowBatteryAlerted = true;
+                    pushHaloMessage('배고파요, 충전해주세요.');
+                }
+
+                // 배터리 20% 초과로 회복 시 알림 리셋
+                if (state.battery > 20) lowBatteryAlerted = false;
+
+                // 6시간(360분) 이상 켜짐 → "쉬어도 될까요?" + 자동 OFF
+                if (state.uptimeMinutes >= 360 && !longUptimeAlerted) {
+                    longUptimeAlerted = true;
+                    state.power = false;
+                    elPower.checked = false;
+                    pushHaloMessage('저 좀 쉬어도 될까요?');
+                    pushStateToServer();
+                }
+
                 // 배터리 방전 시 강제 OFF
                 if (state.battery === 0) {
                     state.power = false;
@@ -539,10 +560,32 @@
 
                 updateVisuals();
             }
+
+            // 충전 중 배터리 100% 도달 → "배불러요"
+            if (state.charging && state.battery >= 100) {
+                state.battery = 100;
+                pushHaloMessage('배불러요. 이제 일할 수 있어요.');
+                pushStateToServer();
+            }
         }, 1000);
 
         // ── 5. 이벤트 핸들러 ────────────────────────────────────
         // ── 6. 서버에 상태 저장 (UI 조작 즉시 반영) ────────────
+        async function pushHaloMessage(message) {
+            const base = document.getElementById('workerUrl').value.trim().replace(/\/$/, '');
+            if (!base || !pollingInterval) return;
+            try {
+                await fetch(`${base}/last-message`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message }),
+                });
+                renderHaloMessage(message);
+            } catch (err) {
+                console.error('발화 저장 오류:', err);
+            }
+        }
+
         async function pushStateToServer() {
             const base = document.getElementById('workerUrl').value.trim().replace(/\/$/, '');
             if (!base || !pollingInterval) return; // 폴링 중일 때만 전송
@@ -561,6 +604,7 @@
 
         elPower.addEventListener('change', (e) => {
             state.power = e.target.checked;
+            if (!state.power) pushHaloMessage('저 켜주세요, 심심해요.');
             updateVisuals();
             pushStateToServer();
         });
