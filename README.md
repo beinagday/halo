@@ -3,8 +3,6 @@
 > 빛으로 공간의 경계를 만드는 감성 오브제 — Nordic Mood  
 > **Team Gyeongnam** / KDM+ 2026
 
-<img src="images/halo-showroom.png" width="720">
-
 ---
 
 ## MCP 커넥터 연결
