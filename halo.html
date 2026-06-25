@@ -544,9 +544,32 @@
         }, 1000);
 
         // ── 5. 이벤트 핸들러 ────────────────────────────────────
+        // ── 6. 서버에 상태 저장 (UI 조작 즉시 반영) ────────────
+        async function pushStateToServer() {
+            const base = document.getElementById('workerUrl').value.trim().replace(/\/$/, '');
+            if (!base || !pollingInterval) return; // 폴링 중일 때만 전송
+            try {
+                await fetch(`${base}/state`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(state),
+                });
+            } catch (err) {
+                console.error('상태 저장 오류:', err);
+            }
+        }
+
         elPower.addEventListener('change', (e) => {
             state.power = e.target.checked;
             updateVisuals();
+            pushStateToServer();
+        });
+
+        elBrightness.addEventListener('change', (e) => {
+            state.brightness = parseInt(e.target.value);
+            elBrightVal.textContent = state.brightness + '%';
+            updateVisuals();
+            pushStateToServer();
         });
 
         elBrightness.addEventListener('input', (e) => {
@@ -555,7 +578,7 @@
             updateVisuals();
         });
 
-        // ── 6. halo 메시지 표시 ──────────────────────────────────
+        // ── 7. halo 메시지 표시 ──────────────────────────────────
         function renderHaloMessage(msg) {
             if (msg) {
                 elHaloMsg.textContent = `" ${msg} "`;
@@ -566,7 +589,7 @@
             }
         }
 
-        // ── 7. MCP 폴링 (상태 + 마지막 발화) ────────────────────
+        // ── 8. MCP 폴링 (상태 + 마지막 발화) ────────────────────
         let pollingInterval = null;
         const btnTogglePoll = document.getElementById('togglePoll');
         const elWorkerUrl   = document.getElementById('workerUrl');
@@ -576,17 +599,15 @@
             if (!base) return;
 
             try {
-                // 상태 폴링
+                // 상태 폴링 — power·brightness만 서버 값으로 갱신 (Claude 명령 반영)
+                // battery·uptimeMinutes는 로컬 시뮬레이션 값 유지
                 const resState = await fetch(`${base}/state`);
                 if (resState.ok) {
                     const serverState = await resState.json();
                     if (serverState && Object.keys(serverState).length > 0) {
-                        const localBattery  = state.battery;
-                        const localUptime   = state.uptimeMinutes;
-                        state = { ...state, ...serverState };
-                        // 로컬 시뮬레이션 값 우선 유지
-                        state.battery       = localBattery;
-                        state.uptimeMinutes = localUptime;
+                        state.power      = serverState.power;
+                        state.brightness = serverState.brightness;
+                        state.charging   = serverState.charging;
                         applyStateToUi();
                     }
                 }
