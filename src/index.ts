@@ -275,6 +275,19 @@ export default {
       );
     }
 
+    // 상태 저장 REST 엔드포인트 (halo.html UI 조작 시 즉시 반영)
+if (url.pathname === "/state" && request.method === "POST") {
+  return request.json().then(async (body: unknown) => {
+    await env.MY_KV.put("state", JSON.stringify(body));
+    return new Response(JSON.stringify({ ok: true }), {
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
+  });
+}
+
     // 마지막 발화 조회 REST 엔드포인트 (halo.html 폴링용)
     if (url.pathname === "/last-message" && request.method === "GET") {
       return env.HALO_KV.get("last_message").then(
