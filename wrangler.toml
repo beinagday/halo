@@ -13,5 +13,5 @@ tag = "v1"
 new_classes = ["HaloMCP"]
 
 [[kv_namespaces]]
-binding = "MY_KV"
-id = "YOUR_KV_NAMESPACE_ID"
+binding = "HALO_KV"
+id = "fc942665a4ee4de58413780118909235"
