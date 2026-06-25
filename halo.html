@@ -549,11 +549,13 @@
             const base = document.getElementById('workerUrl').value.trim().replace(/\/$/, '');
             if (!base || !pollingInterval) return; // 폴링 중일 때만 전송
             try {
+                const body = JSON.stringify(state);
                 await fetch(`${base}/state`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(state),
+                    body: body,
                 });
+                lastStateStr = body; // 내가 방금 저장한 값 → 다음 폴링에서 스킵
             } catch (err) {
                 console.error('상태 저장 오류:', err);
             }
@@ -591,6 +593,7 @@
 
         // ── 8. MCP 폴링 (상태 + 마지막 발화) ────────────────────
         let pollingInterval = null;
+        let lastStateStr = null;
         const btnTogglePoll = document.getElementById('togglePoll');
         const elWorkerUrl   = document.getElementById('workerUrl');
 
@@ -599,7 +602,21 @@
             if (!base) return;
 
             try {
-                // last_message만 폴링 — 상태는 UI 조작 시 직접 POST로 저장
+                // 상태 폴링 — 이전과 동일한 값이면 UI 건드리지 않음
+                const resState = await fetch(`${base}/state`);
+                if (resState.ok) {
+                    const text = await resState.text();
+                    if (text !== '{}' && text !== lastStateStr) {
+                        lastStateStr = text;
+                        const serverState = JSON.parse(text);
+                        state.power      = serverState.power;
+                        state.brightness = serverState.brightness;
+                        state.charging   = serverState.charging;
+                        applyStateToUi();
+                    }
+                }
+
+                // 마지막 발화 폴링
                 const resMsg = await fetch(`${base}/last-message`);
                 if (resMsg.ok) {
                     const data = await resMsg.json();
