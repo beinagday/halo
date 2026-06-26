@@ -53,14 +53,12 @@
             overflow: hidden;
         }
 
-        /* 왼쪽 컨트롤 패널 */
         .control-panel {
             width: 45%;
             padding: 32px;
             border-right: 1px solid #1e2230;
         }
 
-        /* halo 메시지 박스 */
         .halo-message-box {
             background: linear-gradient(135deg, #0d1520, #131a28);
             border: 1px solid #2a3a52;
@@ -74,223 +72,86 @@
             gap: 10px;
         }
 
-        .halo-message-icon {
-            font-size: 18px;
-            flex-shrink: 0;
-        }
+        .halo-message-icon { font-size: 18px; flex-shrink: 0; }
+        .halo-message-text { font-size: 14px; color: #B8D4F0; line-height: 1.5; font-style: italic; }
+        .halo-message-text.empty { color: #4a5568; font-style: normal; }
 
-        .halo-message-text {
-            font-size: 14px;
-            color: #B8D4F0;
-            line-height: 1.5;
-            font-style: italic;
-        }
-
-        .halo-message-text.empty {
-            color: #4a5568;
-            font-style: normal;
-        }
-
-        .form-group {
-            margin-bottom: 22px;
-        }
-
+        .form-group { margin-bottom: 22px; }
         .form-group label {
-            display: block;
-            font-size: 12px;
-            margin-bottom: 10px;
-            color: #7a8499;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
+            display: block; font-size: 12px; margin-bottom: 10px;
+            color: #7a8499; letter-spacing: 0.08em; text-transform: uppercase;
         }
 
-        /* 전원 스위치 */
-        .power-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+        .power-row { display: flex; align-items: center; justify-content: space-between; }
 
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 56px;
-            height: 30px;
-        }
+        .switch { position: relative; display: inline-block; width: 56px; height: 30px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
-            position: absolute; cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #2a2e3a;
-            transition: .4s; border-radius: 30px;
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #2a2e3a; transition: .4s; border-radius: 30px;
         }
         .slider:before {
-            position: absolute; content: "";
-            height: 22px; width: 22px;
-            left: 4px; bottom: 4px;
-            background-color: #fff;
-            transition: .4s; border-radius: 50%;
+            position: absolute; content: ""; height: 22px; width: 22px;
+            left: 4px; bottom: 4px; background-color: #fff; transition: .4s; border-radius: 50%;
         }
         input:checked + .slider { background-color: #7EB5D6; }
         input:checked + .slider:before { transform: translateX(26px); }
 
-        /* 배터리 */
         .battery-display {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #0d1016;
-            padding: 14px 16px;
-            border-radius: 8px;
-            border: 1px solid #1e2230;
+            display: flex; align-items: center; justify-content: space-between;
+            background: #0d1016; padding: 14px 16px; border-radius: 8px; border: 1px solid #1e2230;
         }
-
-        .battery-left {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .battery-gauge {
-            font-size: 22px;
-            font-weight: 700;
-            color: #7EB5D6;
-            font-variant-numeric: tabular-nums;
-        }
-
+        .battery-left { display: flex; flex-direction: column; gap: 4px; }
+        .battery-gauge { font-size: 22px; font-weight: 700; color: #7EB5D6; font-variant-numeric: tabular-nums; }
         .battery-gauge.low { color: #ef4444; }
-
-        .charge-label {
-            font-size: 11px;
-            color: #4a5568;
-            letter-spacing: 0.05em;
-        }
-
+        .charge-label { font-size: 11px; color: #4a5568; letter-spacing: 0.05em; }
         .charge-label.charging { color: #7EB5D6; }
         .charge-label.discharging { color: #6b7280; }
 
-        /* 밝기 슬라이더 */
-        .range-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-
+        .range-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
         .range-label { font-size: 12px; color: #7a8499; text-transform: uppercase; letter-spacing: 0.08em; }
         .range-val { font-size: 14px; font-weight: 700; color: #7EB5D6; }
 
         input[type="range"] {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 4px;
-            background: #1e2230;
-            border-radius: 2px;
-            outline: none;
+            -webkit-appearance: none; width: 100%; height: 4px; background: #1e2230; border-radius: 2px; outline: none;
         }
         input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 18px; height: 18px;
-            border-radius: 50%;
-            background: #7EB5D6;
-            cursor: pointer;
-            box-shadow: 0 0 6px rgba(126,181,214,0.5);
+            -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
+            background: #7EB5D6; cursor: pointer; box-shadow: 0 0 6px rgba(126,181,214,0.5);
         }
 
-        /* 색온도 고정 표시 */
         .fixed-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: #0d1016;
-            border: 1px solid #1e2230;
-            border-radius: 6px;
-            padding: 10px 14px;
-            font-size: 13px;
-            color: #7EB5D6;
+            display: inline-flex; align-items: center; gap: 6px; background: #0d1016;
+            border: 1px solid #1e2230; border-radius: 6px; padding: 10px 14px; font-size: 13px; color: #7EB5D6;
         }
-
         .fixed-badge span { color: #4a5568; font-size: 11px; }
 
-        /* 오른쪽 비주얼 패널 */
         .visual-panel {
-            width: 55%;
-            background-color: var(--bg-color);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            padding: 30px;
-            transition: background-color 0.5s;
+            width: 55%; background-color: var(--bg-color); display: flex;
+            flex-direction: column; justify-content: center; align-items: center;
+            position: relative; padding: 30px; transition: background-color 0.5s;
         }
+        .visual-panel svg { position: relative; z-index: 1; }
 
-        .visual-panel svg {
-            position: relative;
-            z-index: 1;
-        }
-
-        /* 하단 디버그 패널 */
-        .debug-panel {
-            width: 1000px;
-            max-width: 100%;
-            margin-top: 20px;
-            background: #0a0c10;
-            padding: 16px;
-            border-radius: 10px;
-        }
-
-        .debug-row {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-        }
-
+        .debug-panel { width: 1000px; max-width: 100%; margin-top: 20px; background: #0a0c10; padding: 16px; border-radius: 10px; }
+        .debug-row { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
         .debug-row input {
-            flex: 1;
-            min-width: 200px;
-            padding: 8px 12px;
-            background: #13161e;
-            border: 1px solid #1e2230;
-            color: #e0e0e0;
-            border-radius: 6px;
-            font-size: 13px;
+            flex: 1; min-width: 200px; padding: 8px 12px; background: #13161e;
+            border: 1px solid #1e2230; color: #e0e0e0; border-radius: 6px; font-size: 13px;
         }
-
-        .debug-label {
-            font-size: 12px;
-            color: #7a8499;
-            margin-bottom: 8px;
-            letter-spacing: 0.05em;
-        }
-
+        .debug-label { font-size: 12px; color: #7a8499; margin-bottom: 8px; letter-spacing: 0.05em; }
         .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            transition: background 0.2s;
-            white-space: nowrap;
+            padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer;
+            font-size: 13px; font-weight: 600; transition: background 0.2s; white-space: nowrap;
         }
-
         .btn-primary { background: #7EB5D6; color: #0d0f14; }
         .btn-primary:hover { background: #9fcae5; }
         .btn-danger { background: #ef4444; color: #fff; }
         .btn-danger:hover { background: #dc2626; }
 
         pre {
-            background: #060709;
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            color: #7EB5D6;
-            overflow-x: auto;
-            margin: 0;
-            font-family: 'Consolas', monospace;
+            background: #060709; padding: 12px; border-radius: 6px; font-size: 12px;
+            color: #7EB5D6; overflow-x: auto; margin: 0; font-family: 'Consolas', monospace;
         }
     </style>
 </head>
@@ -300,9 +161,7 @@
     <div class="subtitle">Nordic Mood — Virtual Device Showroom</div>
 
     <div class="container">
-
         <div class="control-panel">
-
             <div class="halo-message-box">
                 <div class="halo-message-icon">🌙</div>
                 <div class="halo-message-text empty" id="halo-message">halo의 메시지를 기다리는 중...</div>
@@ -342,7 +201,6 @@
                     🌡️ 2700K — 전구색 (따뜻함) <span>변경 불가</span>
                 </div>
             </div>
-
         </div>
 
         <div class="visual-panel" id="visual-panel">
@@ -372,7 +230,7 @@
                         <stop offset="0%"   stop-color="#6a0f08"/>
                         <stop offset="25%"  stop-color="#C0392B"/>
                         <stop offset="62%"  stop-color="#d9534f"/>
-                        <stop offset="100%" stop-color="#6a0f08"/>
+                        <stop offset="100%" stroke-color="#6a0f08"/>
                     </linearGradient>
                     <linearGradient id="baseShadow" x1="0%" y1="0%" x2="0%" y2="100%">
                         <stop offset="0%"   stop-color="#000" stop-opacity="0"/>
@@ -381,7 +239,6 @@
                 </defs>
 
                 <circle id="glowEllipse" cx="340" cy="203" r="300" fill="url(#haloGlow)" />
-
                 <rect id="diffuser" x="309" y="20" width="62" height="188" rx="4" fill="url(#lampGrad)" fill-opacity="0.97" />
                 <rect id="lightCore" x="317" y="30" width="12" height="172" rx="3" fill="#fff" fill-opacity="0.35" />
                 <rect x="351" y="30" width="6" height="172" rx="2" fill="#fff" fill-opacity="0.15" />
@@ -405,7 +262,7 @@
     <div class="debug-panel">
         <div class="debug-row">
             <label style="white-space: nowrap; margin:0; font-size:12px; color:#7a8499;">MCP Worker URL</label>
-            <input type="text" id="workerUrl" value="https://halo-mcp.username.workers.dev" placeholder="배포한 MCP 서버 주소 입력">
+            <input type="text" id="workerUrl" value="https://halo.typica-918.workers.dev" placeholder="배포한 MCP 서버 주소 입력">
             <button class="btn btn-primary" id="togglePoll">폴링 시작</button>
         </div>
         <div class="debug-label">동기화 중인 현재 상태 JSON</div>
@@ -423,7 +280,8 @@
         };
 
         let state = { ...DEFAULT };
-        let isUserAdjusting = false; // 드래그 중 서버 데이터 덮어쓰기 방지 플래그
+        let isUserAdjusting = false; // 사용자가 UI 조작 중일 때 수신 차단 플래그
+        let isServerOverriding = false; // 서버 데이터를 적용하는 순간 시뮬레이터 백업 전송 일시정지 플래그
 
         // ── 2. DOM 캐시 ─────────────────────────────────────────
         const elPower       = document.getElementById('power');
@@ -440,11 +298,9 @@
 
         // ── 3. 비주얼 렌더링 ────────────────────────────────────
         function updateVisuals() {
-            // 배터리 표시
             elBattery.textContent = state.battery.toFixed(1) + '%';
             elBattery.classList.toggle('low', state.battery <= 20);
 
-            // 충전 레이블
             if (state.charging) {
                 elChargeLabel.textContent = '충전중 ⚡';
                 elChargeLabel.className = 'charge-label charging';
@@ -453,7 +309,6 @@
                 elChargeLabel.className = 'charge-label discharging';
             }
 
-            // 전원 OFF 또는 배터리 방전
             if (!state.power || state.battery <= 0) {
                 elGlow.style.opacity = '0';
                 elDiffuser.setAttribute('fill-opacity', '0.05');
@@ -463,13 +318,11 @@
                 return;
             }
 
-            // 전원 ON: 밝기에 따라 글로우 강도 조절
             const b = state.brightness / 100;
             elGlow.style.opacity = Math.max(0.05, b * 0.95);
             elDiffuser.setAttribute('fill-opacity', (0.1 + b * 0.35).toFixed(2));
             elLightCore.setAttribute('fill-opacity', (0.2 + b * 0.65).toFixed(2));
 
-            // 그라디언트 스톱 조절
             document.getElementById('gStop1').setAttribute('offset', `${5  + b * 15}%`);
             document.getElementById('gStop2').setAttribute('offset', `${10 + b * 30}%`);
             document.getElementById('gStop3').setAttribute('offset', `${20 + b * 45}%`);
@@ -484,13 +337,14 @@
         let longUptimeAlerted = false;
 
         setInterval(() => {
-            // [상태 1] 방전 중 (전원이 켜져 있고 충전 중이 아닐 때)
+            let changed = false;
+
+            // 방전 시뮬레이션
             if (state.power && state.battery > 0 && !state.charging) {
                 const loss = (2 / 60) * (state.brightness / 100);
                 state.battery = Math.max(0, state.battery - loss);
-
-                // 누적 켜진 시간 트래킹 (1초 = 1/60 분)
                 state.uptimeMinutes = parseFloat((state.uptimeMinutes + 1/60).toFixed(4));
+                changed = true;
 
                 if (state.battery <= 20 && !lowBatteryAlerted) {
                     lowBatteryAlerted = true;
@@ -502,28 +356,33 @@
                     state.power = false;
                     elPower.checked = false;
                     pushHaloMessage('저 좀 쉬어도 될까요?');
-                    pushStateToServer();
+                    changed = true;
                 }
 
                 if (state.battery === 0) {
                     state.power = false;
                     elPower.checked = false;
+                    changed = true;
                 }
-
-                updateVisuals();
             }
 
-            // [상태 2] 충전 중 시뮬레이션 로직 보완
+            // 충전 시뮬레이션
             if (state.charging) {
                 if (state.battery < 100) {
-                    // 초당 약 0.5%씩 충전되도록 시뮬레이션 설정
                     state.battery = Math.min(100, state.battery + 0.5);
-                    
                     if (state.battery > 20) lowBatteryAlerted = false;
-                    updateVisuals();
-                } else if (state.battery >= 100) {
+                    changed = true;
+                } else if (state.battery >= 100 && state.battery < 100.1) {
                     state.battery = 100;
                     pushHaloMessage('배불러요. 이제 일할 수 있어요.');
+                    changed = true;
+                }
+            }
+
+            if (changed) {
+                updateVisuals();
+                // ⚠️ 중요: 서버 오버라이드 싱크 주기 도중에는 백업 전송을 잠시 차단하여 레이스 컨디션 해결
+                if (!isServerOverriding && !isUserAdjusting) {
                     pushStateToServer();
                 }
             }
@@ -555,13 +414,12 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: body,
                 });
-                lastStateStr = body;
             } catch (err) {
                 console.error('상태 저장 오류:', err);
             }
         }
 
-        // ── 6. UI 이벤트 핸들러 ────────────────────────────────────
+        // ── 6. UI 이벤트 핸들러 (사용자가 웹 브라우저에서 제어할 때) ──
         elPower.addEventListener('change', (e) => {
             state.power = e.target.checked;
             if (!state.power) pushHaloMessage('저 켜주세요, 심심해요.');
@@ -583,7 +441,7 @@
             elBrightVal.textContent = state.brightness + '%';
             updateVisuals();
             pushStateToServer();
-            isUserAdjusting = false; // 조작 완료 후 락 해제
+            isUserAdjusting = false;
         });
 
         function renderHaloMessage(msg) {
@@ -596,9 +454,8 @@
             }
         }
 
-        // ── 7. MCP 폴링 (상태 + 마지막 발화) ────────────────────
+        // ── 7. MCP 폴링 정밀화 (레이스 컨디션 완전 타파) ────────────────────
         let pollingInterval = null;
-        let lastStateStr = null;
         const btnTogglePoll = document.getElementById('togglePoll');
         const elWorkerUrl   = document.getElementById('workerUrl');
 
@@ -607,20 +464,21 @@
             if (!base) return;
 
             try {
-                // 상태 폴링
                 const resState = await fetch(`${base}/state`);
                 if (resState.ok) {
                     const text = await resState.text();
                     if (text && text !== '{}') {
                         const serverState = JSON.parse(text);
                         
-                        // 사용자가 수동 조작 중이 아닐 때만 유효성 검사 및 정합성 싱크 진행
                         if (!isUserAdjusting) {
+                            // 💡 [핵심 가드]: 클로드(서버)가 변경한 핵심 플래그가 현재 쇼룸 상태와 다르면, 서버 명령을 전적으로 수용
                             if (
                                 state.power !== serverState.power ||
                                 state.brightness !== serverState.brightness ||
                                 state.charging !== serverState.charging
                             ) {
+                                isServerOverriding = true; // 시뮬레이터 백업 전송 잠금 활성화
+
                                 state.power = serverState.power;
                                 state.brightness = serverState.brightness;
                                 state.charging = serverState.charging;
@@ -628,15 +486,20 @@
                                 if (serverState.uptimeMinutes !== undefined) {
                                     state.uptimeMinutes = serverState.uptimeMinutes;
                                 }
+                                // 배터리는 소수점 덮어쓰기 방지를 위해 서버가 충전을 새로 요청했거나 강제 보정될 때 싱크
+                                if (Math.abs(state.battery - serverState.battery) > 2) {
+                                    state.battery = serverState.battery;
+                                }
 
-                                lastStateStr = text;
-                                applyStateToUi(); // 바뀐 상태 UI에 즉시 반영 기폭제
+                                applyStateToUi();
+
+                                // 서버 정합이 끝난 후 레이스 컨디션 루프를 끊기 위해 잠금 해제 시간차 부여
+                                setTimeout(() => { isServerOverriding = false; }, 200);
                             }
                         }
                     }
                 }
 
-                // 마지막 발화 폴링
                 const resMsg = await fetch(`${base}/last-message`);
                 if (resMsg.ok) {
                     const data = await resMsg.json();
@@ -652,7 +515,7 @@
             elPower.checked = state.power;
             elBrightness.value = state.brightness;
             elBrightVal.textContent = state.brightness + '%';
-            updateVisuals(); // 그래픽 요소와 레이블까지 동시 갱신
+            updateVisuals();
         }
 
         btnTogglePoll.addEventListener('click', () => {
@@ -678,11 +541,11 @@
                 if (!res.ok) { applyStateToUi(); return; }
                 const text = await res.text();
                 if (text && text !== '{}') {
-                    lastStateStr = text;
                     const serverState = JSON.parse(text);
                     state.power      = serverState.power;
                     state.brightness = serverState.brightness;
                     state.charging   = serverState.charging;
+                    state.battery    = serverState.battery ?? state.battery;
                 }
             } catch (e) {}
             applyStateToUi();
