@@ -453,7 +453,7 @@
         <pre id="jsonViewer">{}</pre>
     </div>
 
-    <script>
+<script>
         // ── 1. 상태 초기화 ──────────────────────────────────────
         const DEFAULT = {
             power: true,
@@ -464,6 +464,7 @@
         };
 
         let state = { ...DEFAULT };
+        let isUserAdjusting = false; // ✨ [추가] 사용자가 슬라이더를 조작 중인지 판별하는 플래그
 
         // ── 2. DOM 캐시 ─────────────────────────────────────────
         const elPower       = document.getElementById('power');
@@ -519,12 +520,28 @@
             elJsonViewer.textContent = JSON.stringify(state, null, 2);
         }
 
-        // ── 4. 배터리 소모 시뮬레이터 (1초 인터벌) ──────────────
-        // 밝기 100%일 때 분당 2% 소모 (초당 0.0333%)
+        // ── 4. 배터리 소모 및 충전 시뮬레이터 (1초 인터벌) ──────────────
+        let kvSyncCounter = 0; // 10초 주기를 체크하기 위한 카운터 변수
         let lowBatteryAlerted = false;
         let longUptimeAlerted = false;
 
         setInterval(() => {
+            let needsPush = false; // 이번 인터벌에 서버 푸시가 필요한지 체크하는 플래그
+
+            // 1) 충전 로직 시뮬레이션
+            if (state.charging && state.battery < 100) {
+                state.battery = Math.min(100, state.battery + 0.5); 
+                updateVisuals();
+
+                // 충전 중 상태 반영 카운터
+                kvSyncCounter++;
+                if (kvSyncCounter >= 10) {
+                    needsPush = true;
+                    kvSyncCounter = 0;
+                }
+            }
+
+            // 2) 방전 로직 시뮬레이션 (구문이 꼬였던 파트 정상 정리 완료)
             if (state.power && state.battery > 0 && !state.charging) {
                 const loss = (2 / 60) * (state.brightness / 100);
                 state.battery = Math.max(0, state.battery - loss);
@@ -534,46 +551,58 @@
                     (state.uptimeMinutes + 1/60).toFixed(4)
                 );
 
-                // 배터리 20% 이하 → "배고파요"
+                // 배터리 20% 이하 알림
                 if (state.battery <= 20 && !lowBatteryAlerted) {
                     lowBatteryAlerted = true;
                     pushHaloMessage('배고파요, 충전해주세요.');
                 }
 
-                // 배터리 20% 초과로 회복 시 알림 리셋
+                // 배터리 회복 시 알림 리셋
                 if (state.battery > 20) lowBatteryAlerted = false;
 
-                // 6시간(360분) 이상 켜짐 → "쉬어도 될까요?" + 자동 OFF
+                // 6시간(360분) 이상 지속 켜짐 핸들러
                 if (state.uptimeMinutes >= 360 && !longUptimeAlerted) {
                     longUptimeAlerted = true;
                     state.power = false;
                     elPower.checked = false;
                     pushHaloMessage('저 좀 쉬어도 될까요?');
-                    pushStateToServer();
+                    needsPush = true; 
                 }
 
-                // 배터리 방전 시 강제 OFF
+                // 배터리 완전 방전 처리
                 if (state.battery === 0) {
                     state.power = false;
                     elPower.checked = false;
+                    needsPush = true; 
                 }
 
                 updateVisuals();
+                
+                // 일반 상황 소모 동기화 카운터
+                kvSyncCounter++;
+                if (kvSyncCounter >= 10) {
+                    needsPush = true;
+                    kvSyncCounter = 0;
+                }
             }
 
-            // 충전 중 배터리 100% 도달 → "배불러요"
+            // 3) 충전 완료 이벤트 감지 트리거
             if (state.charging && state.battery >= 100) {
                 state.battery = 100;
                 pushHaloMessage('배불러요. 이제 일할 수 있어요.');
+                needsPush = true; 
+            }
+
+            // 푸시 조건 도달 시 서버 동기화 작동
+            if (needsPush) {
                 pushStateToServer();
             }
         }, 1000);
 
-        // ── 5. 이벤트 핸들러 ────────────────────────────────────
-        // ── 6. 서버에 상태 저장 (UI 조작 즉시 반영) ────────────
+        // ── 5. 이벤트 핸들러 및 서버 동기화 ────────────────────────────
         async function pushHaloMessage(message) {
             const base = document.getElementById('workerUrl').value.trim().replace(/\/$/, '');
-            if (!base || !pollingInterval) return;
+            if (!base) return; 
             try {
                 await fetch(`${base}/last-message`, {
                     method: 'POST',
@@ -588,7 +617,7 @@
 
         async function pushStateToServer() {
             const base = document.getElementById('workerUrl').value.trim().replace(/\/$/, '');
-            if (!base || !pollingInterval) return; // 폴링 중일 때만 전송
+            if (!base) return; 
             try {
                 const body = JSON.stringify(state);
                 await fetch(`${base}/state`, {
@@ -596,7 +625,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: body,
                 });
-                lastStateStr = body; // 내가 방금 저장한 값 → 다음 폴링에서 스킵
+                lastStateStr = body; 
             } catch (err) {
                 console.error('상태 저장 오류:', err);
             }
@@ -610,6 +639,7 @@
         });
 
         elBrightness.addEventListener('change', (e) => {
+            isUserAdjusting = false; // 드래그 완료 및 조정 종료
             state.brightness = parseInt(e.target.value);
             elBrightVal.textContent = state.brightness + '%';
             updateVisuals();
@@ -617,6 +647,7 @@
         });
 
         elBrightness.addEventListener('input', (e) => {
+            isUserAdjusting = true; // 사용자가 활발히 마우스/터치 드래그 중인 상태 표시
             state.brightness = parseInt(e.target.value);
             elBrightVal.textContent = state.brightness + '%';
             updateVisuals();
@@ -644,17 +675,22 @@
             if (!base) return;
 
             try {
-                // 상태 폴링 — 이전과 동일한 값이면 UI 건드리지 않음
+                // 상태 폴링
                 const resState = await fetch(`${base}/state`);
                 if (resState.ok) {
                     const text = await resState.text();
                     if (text !== '{}' && text !== lastStateStr) {
                         lastStateStr = text;
                         const serverState = JSON.parse(text);
-                        state.power      = serverState.power;
-                        state.brightness = serverState.brightness;
-                        state.charging   = serverState.charging;
-                        applyStateToUi();
+                        
+                        // ✨ [수정 반영] 사용자가 조작 중인 타이밍이 아닐 때만 수신 데이터 바인딩
+                        if (!isUserAdjusting) {
+                            state.power      = serverState.power;
+                            state.brightness = serverState.brightness;
+                            state.charging   = serverState.charging;
+                            state.uptimeMinutes = serverState.uptimeMinutes ?? state.uptimeMinutes; 
+                            applyStateToUi();
+                        }
                     }
                 }
 
@@ -684,14 +720,14 @@
                 btnTogglePoll.textContent = '폴링 시작';
                 btnTogglePoll.className = 'btn btn-primary';
             } else {
-                syncWithMcp(); // 즉시 1회 실행
+                syncWithMcp(); 
                 pollingInterval = setInterval(syncWithMcp, 2000);
                 btnTogglePoll.textContent = '폴링 중단';
                 btnTogglePoll.className = 'btn btn-danger';
             }
         });
 
-        // ── 8. 초기 렌더링 — 서버 KV에서 상태 가져온 후 적용 ──
+        // ── 9. 초기 렌더링 — 서버 KV에서 상태 가져온 후 적용 ──
         async function initState() {
             const base = elWorkerUrl.value.trim().replace(/\/$/, '');
             if (!base) { applyStateToUi(); return; }
@@ -705,6 +741,7 @@
                     state.power      = serverState.power;
                     state.brightness = serverState.brightness;
                     state.charging   = serverState.charging;
+                    state.uptimeMinutes = serverState.uptimeMinutes ?? 0;
                 }
             } catch (e) {}
             applyStateToUi();
