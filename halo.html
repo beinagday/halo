@@ -679,22 +679,37 @@
                 const resState = await fetch(`${base}/state`);
                 if (resState.ok) {
                     const text = await resState.text();
-                    if (text !== '{}' && text !== lastStateStr) {
-                        lastStateStr = text;
+                    if (text && text !== '{}') {
                         const serverState = JSON.parse(text);
                         
-                        // ✨ [수정 반영] 사용자가 조작 중인 타이밍이 아닐 때만 수신 데이터 바인딩
+                        // ✨ [핵심 수정] 사용자가 수동 드래그 중이 아닐 때만 서버 명령 강제 동기화
                         if (!isUserAdjusting) {
-                            state.power      = serverState.power;
-                            state.brightness = serverState.brightness;
-                            state.charging   = serverState.charging;
-                            state.uptimeMinutes = serverState.uptimeMinutes ?? state.uptimeMinutes; 
-                            applyStateToUi();
+                            // 1) 전원, 밝기, 충전 상태 중 하나라도 서버 값이 내 화면과 다르면 동기화 수행
+                            if (
+                                state.power !== serverState.power ||
+                                state.brightness !== serverState.brightness ||
+                                state.charging !== serverState.charging
+                            ) {
+                                state.power      = serverState.power;
+                                state.brightness = serverState.brightness;
+                                state.charging   = serverState.charging;
+                                
+                                // 서버에 저장된 누적 시간도 가져옴 (없으면 유지)
+                                if (serverState.uptimeMinutes !== undefined) {
+                                    state.uptimeMinutes = serverState.uptimeMinutes;
+                                }
+
+                                // 텍스트 비교 가드를 깨지 않도록 동기화 기록 맞춤
+                                lastStateStr = text; 
+
+                                // UI와 비주얼 요소 즉시 강제 리프레시
+                                applyStateToUi();
+                            }
                         }
                     }
                 }
 
-                // 마지막 발화 폴링
+                // 마지막 발화 폴링 (기존 유지)
                 const resMsg = await fetch(`${base}/last-message`);
                 if (resMsg.ok) {
                     const data = await resMsg.json();
@@ -707,9 +722,12 @@
         }
 
         function applyStateToUi() {
+            // UI 컴포넌트 값 강제 업데이트
             elPower.checked = state.power;
             elBrightness.value = state.brightness;
             elBrightVal.textContent = state.brightness + '%';
+            
+            // ✨ [추가] 수신한 상태(충전 여부 등)를 토대로 램프 빛 그라디언트와 배터리 레이블 즉시 다시 그리기
             updateVisuals();
         }
 
