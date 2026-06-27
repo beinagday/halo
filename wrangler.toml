@@ -5,7 +5,7 @@ compatibility_flags = ["nodejs_compat"]
 
 [[kv_namespaces]]
 binding = "HALO_KV"
-id = "fc942665a4ee4de58413780118909235"
+id = "debd4623fa55406da195fc6c6747c54d"
 
 [[durable_objects.bindings]]
 name = "MCP_OBJECT"
